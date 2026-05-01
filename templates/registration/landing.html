@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Keabsahan Akta Kelahiran — Kabupaten Magetan</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --merah:   #C0392B;
+      --merah2:  #96281B;
+      --emas:    #D4A017;
+      --emas2:   #B8860B;
+      --putih:   #FDFAF5;
+      --abu:     #6B7280;
+      --gelap:   #1A1A2E;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--putih);
+      color: var(--gelap);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── HERO ─────────────────────────────────── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: linear-gradient(160deg, #1A1A2E 0%, #16213E 55%, #0F3460 100%);
+      overflow: hidden;
+    }
+
+    /* batik pattern overlay */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        repeating-linear-gradient(45deg, rgba(212,160,23,.06) 0, rgba(212,160,23,.06) 1px, transparent 0, transparent 50%),
+        repeating-linear-gradient(-45deg, rgba(212,160,23,.06) 0, rgba(212,160,23,.06) 1px, transparent 0, transparent 50%);
+      background-size: 28px 28px;
+      pointer-events: none;
+    }
+
+    /* ── NAV ───────────────────────────────────── */
+    nav {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 3rem;
+      border-bottom: 1px solid rgba(212,160,23,.2);
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      text-decoration: none;
+    }
+
+    .nav-logo {
+      width: 44px; height: 44px;
+      background: linear-gradient(135deg, var(--emas), var(--emas2));
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; font-weight: 700; color: #fff;
+      flex-shrink: 0;
+    }
+
+    .nav-title-wrap { display: flex; flex-direction: column; }
+    .nav-title      { font-size: .75rem; color: var(--emas); letter-spacing: .12em; text-transform: uppercase; font-weight: 600; }
+    .nav-subtitle   { font-size: .95rem; color: rgba(255,255,255,.85); font-weight: 500; }
+
+    .nav-actions { display: flex; gap: .75rem; }
+
+    .btn-nav-outline {
+      padding: .5rem 1.4rem;
+      border: 1.5px solid rgba(212,160,23,.6);
+      border-radius: 6px;
+      color: var(--emas);
+      font-family: inherit; font-size: .875rem; font-weight: 500;
+      background: transparent;
+      cursor: pointer; text-decoration: none;
+      transition: all .25s;
+    }
+    .btn-nav-outline:hover { background: rgba(212,160,23,.12); border-color: var(--emas); }
+
+    .btn-nav-solid {
+      padding: .5rem 1.4rem;
+      background: linear-gradient(135deg, var(--merah), var(--merah2));
+      border: none; border-radius: 6px;
+      color: #fff;
+      font-family: inherit; font-size: .875rem; font-weight: 600;
+      cursor: pointer; text-decoration: none;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .btn-nav-solid:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(192,57,43,.4); }
+
+    /* ── HERO CONTENT ─────────────────────────── */
+    .hero-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 4rem 2rem;
+      position: relative; z-index: 5;
+    }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: rgba(212,160,23,.12);
+      border: 1px solid rgba(212,160,23,.35);
+      border-radius: 999px;
+      padding: .35rem 1rem;
+      font-size: .78rem; color: var(--emas);
+      letter-spacing: .08em; text-transform: uppercase; font-weight: 600;
+      margin-bottom: 1.5rem;
+      animation: fadeUp .6s ease both;
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.15;
+      margin-bottom: 1.25rem;
+      animation: fadeUp .7s .1s ease both;
+    }
+
+    .hero-title span { color: var(--emas); }
+
+    .hero-desc {
+      font-size: clamp(.95rem, 1.8vw, 1.1rem);
+      color: rgba(255,255,255,.68);
+      max-width: 560px;
+      line-height: 1.8;
+      margin-bottom: 2.5rem;
+      font-weight: 300;
+      animation: fadeUp .8s .2s ease both;
+    }
+
+    .hero-cta {
+      display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+      animation: fadeUp .9s .3s ease both;
+    }
+
+    .btn-primary {
+      padding: .85rem 2.2rem;
+      background: linear-gradient(135deg, var(--merah), var(--merah2));
+      color: #fff; border: none; border-radius: 8px;
+      font-family: inherit; font-size: 1rem; font-weight: 600;
+      cursor: pointer; text-decoration: none;
+      box-shadow: 0 4px 20px rgba(192,57,43,.4);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(192,57,43,.5); }
+
+    .btn-secondary {
+      padding: .85rem 2.2rem;
+      background: rgba(255,255,255,.07);
+      border: 1.5px solid rgba(255,255,255,.25);
+      color: #fff; border-radius: 8px;
+      font-family: inherit; font-size: 1rem; font-weight: 500;
+      cursor: pointer; text-decoration: none;
+      transition: background .25s;
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,.13); }
+
+    /* ── STATS BAR ───────────────────────────── */
+    .stats-bar {
+      position: relative; z-index: 5;
+      display: flex; justify-content: center; gap: 0;
+      background: rgba(255,255,255,.04);
+      border-top: 1px solid rgba(212,160,23,.15);
+      padding: 1.5rem 2rem;
+      flex-wrap: wrap;
+    }
+
+    .stat-item {
+      display: flex; flex-direction: column; align-items: center;
+      padding: .5rem 3rem;
+      border-right: 1px solid rgba(255,255,255,.1);
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-num  { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--emas); font-weight: 700; }
+    .stat-lbl  { font-size: .75rem; color: rgba(255,255,255,.5); text-transform: uppercase; letter-spacing: .08em; margin-top: .15rem; }
+
+    /* ── FITUR ───────────────────────────────── */
+    .section { padding: 5rem 2rem; }
+
+    .section-inner { max-width: 1000px; margin: 0 auto; }
+
+    .section-label {
+      font-size: .75rem; color: var(--merah); letter-spacing: .15em;
+      text-transform: uppercase; font-weight: 700; margin-bottom: .5rem;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      color: var(--gelap); margin-bottom: 1rem;
+    }
+
+    .section-desc { color: var(--abu); line-height: 1.8; max-width: 540px; font-size: .95rem; }
+
+    .cards {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem; margin-top: 3rem;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid #E5E7EB;
+      border-radius: 12px;
+      padding: 1.75rem;
+      transition: transform .25s, box-shadow .25s;
+    }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,.08); }
+
+    .card-icon {
+      width: 48px; height: 48px;
+      background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; margin-bottom: 1rem;
+    }
+
+    .card h3 { font-size: 1rem; font-weight: 600; margin-bottom: .5rem; color: var(--gelap); }
+    .card p  { font-size: .875rem; color: var(--abu); line-height: 1.7; }
+
+    /* ── CARA PENGGUNAAN ─────────────────────── */
+    .steps { max-width: 700px; margin: 3rem auto 0; }
+
+    .step {
+      display: flex; gap: 1.25rem; align-items: flex-start;
+      padding: 1.25rem 0;
+      border-bottom: 1px dashed #E5E7EB;
+    }
+    .step:last-child { border-bottom: none; }
+
+    .step-num {
+      width: 36px; height: 36px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--merah), var(--merah2));
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 700; font-size: .9rem;
+    }
+
+    .step-text h4 { font-size: .95rem; font-weight: 600; margin-bottom: .25rem; }
+    .step-text p  { font-size: .875rem; color: var(--abu); line-height: 1.6; }
+
+    /* ── FOOTER ─────────────────────────────── */
+    footer {
+      background: var(--gelap);
+      color: rgba(255,255,255,.5);
+      text-align: center;
+      padding: 2rem;
+      font-size: .82rem;
+      line-height: 1.8;
+    }
+    footer strong { color: rgba(255,255,255,.85); }
+
+    /* ── MESSAGES ────────────────────────────── */
+    .messages { position: fixed; top: 1rem; right: 1rem; z-index: 999; display: flex; flex-direction: column; gap: .5rem; }
+    .msg {
+      padding: .85rem 1.25rem; border-radius: 8px;
+      font-size: .875rem; font-weight: 500; max-width: 340px;
+      animation: fadeUp .3s ease;
+    }
+    .msg-success { background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; }
+    .msg-error   { background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; }
+    .msg-info    { background: #DBEAFE; color: #1E40AF; border: 1px solid #BFDBFE; }
+    .msg-warning { background: #FEF3C7; color: #92400E; border: 1px solid #FDE68A; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 640px) {
+      nav { padding: 1rem 1.25rem; }
+      .stat-item { padding: .5rem 1.5rem; }
+      .section { padding: 3.5rem 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+{% if messages %}
+<div class="messages">
+  {% for message in messages %}
+    <div class="msg msg-{{ message.tags }}">{{ message }}</div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- HERO -->
+<section class="hero">
+  <nav>
+    <a href="{% url 'landing' %}" class="nav-brand">
+      {% load static %}
+      <img src="{% static 'img/logo_disdukcapil.png' %}"
+        alt="Logo Disdukcapil Magetan"
+        style="width:44px;height:44px;border-radius:50%;object-fit:cover;"/>
+      <div class="nav-title-wrap">
+        <span class="nav-title">Kabupaten Magetan</span>
+        <span class="nav-subtitle">Akta Kelahiran Digital</span>
+      </div>
+    </a>
+    <div class="nav-actions">
+      <a href="{% url 'login' %}" class="btn-nav-outline">Masuk</a>
+      <a href="{% url 'register' %}" class="btn-nav-solid">Daftar Sekarang</a>
+    </div>
+  </nav>
+
+  <div class="hero-content">
+    <div class="badge">Layanan Resmi Disdukcapil Magetan</div>
+    <h1 class="hero-title">
+      Selamat Datang,<br/>
+      Masyarakat <span>Magetan</span>
+    </h1>
+    <p class="hero-desc">
+      Platform digital untuk pengajuan dan verifikasi keabsahan akta kelahiran
+      Kabupaten Magetan. Mudah, Cepat, dan Gratis.
+    </p>
+    <div class="hero-cta">
+      <a href="{% url 'register' %}" class="btn-primary">Buat Akun Baru</a>
+      <a href="{% url 'login' %}" class="btn-secondary">Sudah Punya Akun</a>
+    </div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-item"><span class="stat-num">9.999+</span><span class="stat-lbl">Akta Diproses</span></div>
+    <div class="stat-item"><span class="stat-num">2 Hari</span><span class="stat-lbl">Rata-rata Proses</span></div>
+    <div class="stat-item"><span class="stat-num">24/7</span><span class="stat-lbl">Layanan Online</span></div>
+    <div class="stat-item"><span class="stat-num">100%</span><span class="stat-lbl">Terenkripsi</span></div>
+  </div>
+</section>
+
+<!-- FITUR -->
+<section class="section" style="background: #FAFAFA;">
+  <div class="section-inner">
+    <p class="section-label">Kenapa Menggunakan Platform Ini</p>
+    <h2 class="section-title">Fitur Unggulan</h2>
+    <p class="section-desc">Dirancang khusus untuk mempermudah masyarakat Magetan dalam mengurus dokumen kependudukan.</p>
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon">📋</div>
+        <h3>Pengajuan Online</h3>
+        <p>Ajukan verifikasi akta kelahiran kapan saja tanpa perlu antre di kantor.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔒</div>
+        <h3>Verifikasi Aman</h3>
+        <p>Identitas dijaga dengan enkripsi NIK dan verifikasi email dua langkah.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📬</div>
+        <h3>Notifikasi Real-time</h3>
+        <p>Pantau status permohonan Anda langsung dari email atau dashboard.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CARA PENGGUNAAN -->
+<section class="section">
+  <div class="section-inner" style="text-align:center;">
+    <p class="section-label">Mulai Dalam 3 Langkah</p>
+    <h2 class="section-title">Cara Penggunaan</h2>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-text">
+        <h4>Daftar Akun</h4>
+        <p>Isi formulir registrasi dengan NIK, nama, nomor HP, dan email aktif Anda. Lakukan verifikasi email untuk mengaktifkan akun.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-text">
+        <h4>Login & Ajukan Permohonan</h4>
+        <p>Masuk menggunakan NIK dan password, lalu lengkapi formulir permohonan keabsahan akta kelahiran.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-text">
+        <h4>Pantau Status</h4>
+        <p>Ikuti perkembangan permohonan Anda melalui dashboard. Hasil akan dikirim ke email terdaftar.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <strong>Dinas Kependudukan dan Pencatatan Sipil Kabupaten Magetan</strong><br/>
+  Jl. Raya Magetan – Madiun Km. 4,5 Magetan, Jawa Timur 63391<br/>
+  © 2025 Pemerintah Kabupaten Magetan — Hak Cipta Dilindungi
+</footer>
+
+</body>
+</html>

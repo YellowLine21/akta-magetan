@@ -1,0 +1,90 @@
+{% extends "permohonan/base_permohonan.html" %}
+{% block title %}Review Permohonan{% endblock %}
+
+{% block content %}
+
+<!-- DATA ANAK -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-header-icon" style="background:#FEF3C7;">👶</div>
+    <div><h3>Data Anak</h3><p>Periksa kembali sebelum mengajukan</p></div>
+  </div>
+  <div class="card-body">
+    <table class="review-table">
+      <tr><td>Nama Lengkap</td><td><strong>{{ permohonan.nama_anak }}</strong></td></tr>
+      <tr><td>NIK Anak</td><td>{{ permohonan.nik_anak }}</td></tr>
+      <tr><td>Tempat Lahir</td><td>{{ permohonan.tempat_lahir }}</td></tr>
+      <tr><td>Tanggal Lahir</td><td>{{ permohonan.tanggal_lahir|date:"d F Y" }}</td></tr>
+      <tr><td>Nomor Akta Kelahiran</td><td>{{ permohonan.nomor_akta }}</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- DATA ORANG TUA -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-header-icon" style="background:#DBEAFE;">👨‍👩</div>
+    <div><h3>Data Orang Tua</h3></div>
+  </div>
+  <div class="card-body">
+    <p class="form-section-title">Ayah</p>
+    <table class="review-table" style="margin-bottom:1.25rem;">
+      <tr><td>Nama Ayah</td><td><strong>{{ permohonan.nama_ayah }}</strong></td></tr>
+      <tr><td>NIK Ayah</td><td>{{ permohonan.nik_ayah }}</td></tr>
+      <tr><td>No. Buku Nikah Ayah</td><td>{{ permohonan.no_nikah_ayah|default:"—" }}</td></tr>
+    </table>
+    <p class="form-section-title">Ibu</p>
+    <table class="review-table" style="margin-bottom:1.25rem;">
+      <tr><td>Nama Ibu</td><td><strong>{{ permohonan.nama_ibu }}</strong></td></tr>
+      <tr><td>NIK Ibu</td><td>{{ permohonan.nik_ibu }}</td></tr>
+      <tr><td>No. Buku Nikah Ibu</td><td>{{ permohonan.no_nikah_ibu|default:"—" }}</td></tr>
+    </table>
+    <p class="form-section-title">Pernikahan</p>
+    <table class="review-table">
+      <tr><td>Tanggal Menikah</td><td>{{ permohonan.tanggal_menikah|date:"d F Y"|default:"—" }}</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- BERKAS -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-header-icon" style="background:#EDE9FE;">📎</div>
+    <div><h3>Berkas yang Diunggah</h3></div>
+  </div>
+  <div class="card-body">
+    <div class="berkas-grid">
+      {% for b in berkas_list %}
+      <div class="berkas-item">
+        <span class="berkas-item-icon">✅</span>
+        <div class="berkas-item-text">{{ b.get_jenis_display }}<br/><span style="color:var(--abu);font-size:.72rem;">{{ b.nama_file }}</span></div>
+      </div>
+      {% empty %}
+      <p style="font-size:.875rem;color:var(--abu);">Belum ada berkas yang diunggah.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- KONFIRMASI -->
+<div class="card" style="border-color:#FEF3C7;background:#FFFBEB;">
+  <div class="card-body" style="display:flex;align-items:flex-start;gap:1rem;">
+    <span style="font-size:1.5rem;flex-shrink:0;">⚠️</span>
+    <div>
+      <p style="font-size:.875rem;font-weight:600;color:#92400E;margin-bottom:.35rem;">Perhatian sebelum mengajukan</p>
+      <p style="font-size:.82rem;color:#B45309;line-height:1.7;">
+        Pastikan semua data yang Anda masukkan sudah benar dan sesuai dokumen asli. Setelah diajukan, permohonan tidak dapat diedit dan akan diproses oleh petugas Disdukcapil Magetan.
+      </p>
+    </div>
+  </div>
+</div>
+
+<form method="POST">
+  {% csrf_token %}
+  <div class="btn-row">
+    <a href="{% url 'permohonan:langkah_upload' pk=permohonan.pk %}" class="btn btn-outline">← Kembali Edit</a>
+    <button type="submit" class="btn btn-success">✅ Ajukan Permohonan</button>
+  </div>
+</form>
+
+{% endblock %}

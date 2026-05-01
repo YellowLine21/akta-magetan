@@ -1,0 +1,109 @@
+{% extends "permohonan/base_permohonan.html" %}
+{% block title %}Upload Berkas{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <div class="card-header-icon" style="background:#EDE9FE;">📎</div>
+    <div>
+      <h3>Upload Berkas Pendukung</h3>
+      <p>Format yang diterima: PDF, JPG, PNG. Maks. 5 MB per file.</p>
+    </div>
+  </div>
+  <div class="card-body">
+
+    {% if form.non_field_errors %}
+      <div style="background:#FEE2E2;color:#991B1B;padding:.75rem 1rem;border-radius:8px;margin-bottom:1rem;font-size:.875rem;">
+        {% for e in form.non_field_errors %}{{ e }}{% endfor %}
+      </div>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+
+      <div class="upload-grid">
+
+        <!-- AKTA KELAHIRAN -->
+        <div class="upload-item {% if berkas_tersedia.akta_kelahiran %}uploaded{% endif %}" id="box-akta">
+          <input type="file" name="akta_kelahiran" class="form-file" accept=".pdf,.jpg,.jpeg,.png" onchange="updateBox(this,'box-akta','lbl-akta')">
+          <div class="upload-icon">📋</div>
+          <div class="upload-label">Akta Kelahiran</div>
+          <div class="upload-hint">Wajib diunggah</div>
+          <div class="upload-status {% if berkas_tersedia.akta_kelahiran %}ok{% endif %}" id="lbl-akta">
+            {% if berkas_tersedia.akta_kelahiran %}✅ Sudah diunggah{% else %}Belum dipilih{% endif %}
+          </div>
+          {% if form.akta_kelahiran.errors %}<p style="font-size:.74rem;color:var(--merah);margin-top:.3rem;">{{ form.akta_kelahiran.errors|join:', ' }}</p>{% endif %}
+        </div>
+
+        <!-- KK -->
+        <div class="upload-item {% if berkas_tersedia.kk %}uploaded{% endif %}" id="box-kk">
+          <input type="file" name="kk" class="form-file" accept=".pdf,.jpg,.jpeg,.png" onchange="updateBox(this,'box-kk','lbl-kk')">
+          <div class="upload-icon">🏠</div>
+          <div class="upload-label">Kartu Keluarga</div>
+          <div class="upload-hint">Wajib diunggah</div>
+          <div class="upload-status {% if berkas_tersedia.kk %}ok{% endif %}" id="lbl-kk">
+            {% if berkas_tersedia.kk %}✅ Sudah diunggah{% else %}Belum dipilih{% endif %}
+          </div>
+          {% if form.kk.errors %}<p style="font-size:.74rem;color:var(--merah);margin-top:.3rem;">{{ form.kk.errors|join:', ' }}</p>{% endif %}
+        </div>
+
+        <!-- BUKU NIKAH -->
+        <div class="upload-item {% if berkas_tersedia.buku_nikah %}uploaded{% endif %}" id="box-nikah">
+          <input type="file" name="buku_nikah" class="form-file" accept=".pdf,.jpg,.jpeg,.png" onchange="updateBox(this,'box-nikah','lbl-nikah')">
+          <div class="upload-icon">💍</div>
+          <div class="upload-label">Buku Nikah Orang Tua</div>
+          <div class="upload-hint">Wajib diunggah</div>
+          <div class="upload-status {% if berkas_tersedia.buku_nikah %}ok{% endif %}" id="lbl-nikah">
+            {% if berkas_tersedia.buku_nikah %}✅ Sudah diunggah{% else %}Belum dipilih{% endif %}
+          </div>
+          {% if form.buku_nikah.errors %}<p style="font-size:.74rem;color:var(--merah);margin-top:.3rem;">{{ form.buku_nikah.errors|join:', ' }}</p>{% endif %}
+        </div>
+
+        <!-- KTP AYAH -->
+        <div class="upload-item {% if berkas_tersedia.ktp_ayah %}uploaded{% endif %}" id="box-ayah">
+          <input type="file" name="ktp_ayah" class="form-file" accept=".pdf,.jpg,.jpeg,.png" onchange="updateBox(this,'box-ayah','lbl-ayah')">
+          <div class="upload-icon">🪪</div>
+          <div class="upload-label">KTP / Akta Kematian Ayah</div>
+          <div class="upload-hint">Wajib diunggah</div>
+          <div class="upload-status {% if berkas_tersedia.ktp_ayah %}ok{% endif %}" id="lbl-ayah">
+            {% if berkas_tersedia.ktp_ayah %}✅ Sudah diunggah{% else %}Belum dipilih{% endif %}
+          </div>
+          {% if form.ktp_ayah.errors %}<p style="font-size:.74rem;color:var(--merah);margin-top:.3rem;">{{ form.ktp_ayah.errors|join:', ' }}</p>{% endif %}
+        </div>
+
+        <!-- KTP IBU -->
+        <div class="upload-item {% if berkas_tersedia.ktp_ibu %}uploaded{% endif %}" id="box-ibu">
+          <input type="file" name="ktp_ibu" class="form-file" accept=".pdf,.jpg,.jpeg,.png" onchange="updateBox(this,'box-ibu','lbl-ibu')">
+          <div class="upload-icon">🪪</div>
+          <div class="upload-label">KTP / Akta Kematian Ibu</div>
+          <div class="upload-hint">Wajib diunggah</div>
+          <div class="upload-status {% if berkas_tersedia.ktp_ibu %}ok{% endif %}" id="lbl-ibu">
+            {% if berkas_tersedia.ktp_ibu %}✅ Sudah diunggah{% else %}Belum dipilih{% endif %}
+          </div>
+          {% if form.ktp_ibu.errors %}<p style="font-size:.74rem;color:var(--merah);margin-top:.3rem;">{{ form.ktp_ibu.errors|join:', ' }}</p>{% endif %}
+        </div>
+
+      </div>
+
+      <div class="btn-row">
+        <a href="{% url 'permohonan:langkah_data_edit' pk=permohonan.pk %}" class="btn btn-outline">← Kembali</a>
+        <button type="submit" class="btn btn-primary">Simpan & Lanjut ke Tinjau →</button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<script>
+function updateBox(input, boxId, lblId) {
+  const box = document.getElementById(boxId);
+  const lbl = document.getElementById(lblId);
+  if (input.files && input.files[0]) {
+    const name = input.files[0].name;
+    box.classList.add('uploaded');
+    lbl.classList.add('ok');
+    lbl.textContent = '✅ ' + name;
+  }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,226 @@
+{% extends "permohonan/base_permohonan.html" %}
+{% block title %}Status Permohonan{% endblock %}
+
+{% block content %}
+
+<!-- STATUS HERO -->
+<div class="status-hero">
+  <div class="status-hero-inner">
+    {% if permohonan.status == "selesai" %}
+      <span class="status-badge" style="background:rgba(5,150,105,.3);color:#6EE7B7;">✅ Selesai</span>
+    {% elif permohonan.status == "ditolak" %}
+      <span class="status-badge" style="background:rgba(220,38,38,.3);color:#FCA5A5;">❌ Ditolak</span>
+    {% elif permohonan.status == "perlu_revisi" %}
+      <span class="status-badge" style="background:rgba(220,38,38,.25);color:#FCA5A5;">⚠️ Perlu Revisi</span>
+    {% elif permohonan.status == "diproses" %}
+      <span class="status-badge" style="background:rgba(124,58,237,.3);color:#C4B5FD;">🔄 Sedang Diproses</span>
+    {% elif permohonan.status == "verifikasi" %}
+      <span class="status-badge" style="background:rgba(217,119,6,.3);color:#FCD34D;">🔍 Sedang Diverifikasi</span>
+    {% else %}
+      <span class="status-badge" style="background:rgba(37,99,235,.3);color:#93C5FD;">📬 Diajukan</span>
+    {% endif %}
+
+    <h2 style="font-family:'Playfair Display',serif;font-size:1.5rem;color:#fff;margin-bottom:.25rem;">
+      {{ permohonan.nama_anak }}
+    </h2>
+    <p style="font-size:.82rem;color:rgba(255,255,255,.55);">
+      No. Akta: {{ permohonan.nomor_akta }} &nbsp;|&nbsp;
+      Diajukan: {% if permohonan.diajukan_pada %}{{ permohonan.diajukan_pada|date:"d M Y, H:i" }} WIB{% else %}—{% endif %}
+    </p>
+
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" style="width:{{ permohonan.get_progress_persen }}%;"></div>
+    </div>
+    <p style="font-size:.75rem;color:rgba(255,255,255,.5);">Progress: {{ permohonan.get_progress_persen }}%</p>
+  </div>
+</div>
+
+<!-- TIMELINE STATUS -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-header-icon" style="background:#DBEAFE;">📊</div>
+    <div><h3>Riwayat Status</h3><p>Perkembangan permohonan Anda secara waktu nyata</p></div>
+  </div>
+  <div class="card-body">
+
+    {% with s=permohonan.status %}
+    <div class="timeline">
+
+      <!-- Langkah 1: Diajukan -->
+      <div class="timeline-item">
+        <div class="timeline-dot {% if permohonan.diajukan_pada %}done{% else %}pending{% endif %}">
+          {% if permohonan.diajukan_pada %}✓{% else %}1{% endif %}
+        </div>
+        <div class="timeline-connector"></div>
+        <div class="timeline-content">
+          <p class="timeline-title {% if not permohonan.diajukan_pada %}pending{% endif %}">Permohonan Diajukan</p>
+          <p class="timeline-time">
+            {% if permohonan.diajukan_pada %}{{ permohonan.diajukan_pada|date:"d M Y, H:i" }} WIB{% else %}Menunggu pengajuan{% endif %}
+          </p>
+        </div>
+      </div>
+
+      <!-- Langkah 2: Verifikasi -->
+      <div class="timeline-item">
+        <div class="timeline-dot {% if s == 'verifikasi' or s == 'diproses' or s == 'selesai' %}{% if s == 'verifikasi' %}active{% else %}done{% endif %}{% else %}pending{% endif %}">
+          {% if s == 'diproses' or s == 'selesai' %}✓{% elif s == 'verifikasi' %}🔍{% else %}2{% endif %}
+        </div>
+        <div class="timeline-connector"></div>
+        <div class="timeline-content">
+          <p class="timeline-title {% if s == 'verifikasi' %}active{% elif s != 'diproses' and s != 'selesai' %}pending{% endif %}">Verifikasi Dokumen</p>
+          <p class="timeline-time">Petugas memeriksa kelengkapan berkas yang diunggah</p>
+          {% if s == 'verifikasi' %}
+          <p class="timeline-note">⏳ Petugas sedang memverifikasi dokumen Anda. Proses ini membutuhkan 1–2 hari kerja.</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Langkah 3: Diproses -->
+      <div class="timeline-item">
+        <div class="timeline-dot {% if s == 'diproses' %}active{% elif s == 'selesai' %}done{% else %}pending{% endif %}">
+          {% if s == 'selesai' %}✓{% elif s == 'diproses' %}🔄{% else %}3{% endif %}
+        </div>
+        <div class="timeline-connector"></div>
+        <div class="timeline-content">
+          <p class="timeline-title {% if s == 'diproses' %}active{% elif s != 'selesai' %}pending{% endif %}">Sedang Diproses</p>
+          <p class="timeline-time">Pencatatan dan pengesahan keabsahan akta kelahiran</p>
+          {% if s == 'diproses' %}
+          <p class="timeline-note">🔄 Akta Anda sedang dalam proses pengesahan resmi. Estimasi 1–2 hari kerja.</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Langkah 4: Selesai -->
+      <div class="timeline-item">
+        <div class="timeline-dot {% if s == 'selesai' %}done{% else %}pending{% endif %}">
+          {% if s == 'selesai' %}✓{% else %}4{% endif %}
+        </div>
+        <div class="timeline-content">
+          <p class="timeline-title {% if s != 'selesai' %}pending{% endif %}">Selesai</p>
+          <p class="timeline-time">Akta kelahiran telah diverifikasi dan disahkan</p>
+          {% if s == 'selesai' %}
+          <p class="timeline-note" style="background:#D1FAE5;color:#065F46;">🎉 Keabsahan akta kelahiran telah selesai diproses. Silakan unduh dokumen halaman notifikasi atau cek kotak masuk email anda.</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Catatan Revisi / Tolak -->
+      {% if s == 'perlu_revisi' or s == 'ditolak' %}
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background:#FEE2E2;color:#DC2626;">
+          {% if s == 'ditolak' %}✗{% else %}!{% endif %}
+        </div>
+        <div class="timeline-content">
+          <p class="timeline-title" style="color:#DC2626;">
+            {% if s == 'ditolak' %}Permohonan Ditolak{% else %}Perlu Revisi Dokumen{% endif %}
+          </p>
+          {% with last=permohonan.riwayat.first %}
+          {% if last.catatan %}
+          <p class="timeline-note" style="background:#FEE2E2;color:#991B1B;">📝 Catatan: {{ last.catatan }}</p>
+          {% endif %}
+          {% endwith %}
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+    {% endwith %}
+
+  </div>
+</div>
+
+{% if permohonan.status == "selesai" and permohonan.hasil_akta %}
+<!-- DOWNLOAD HASIL AKTA — hanya tampil jika sudah selesai & ada file -->
+<div style="background:#fff;border:2px solid #A7F3D0;border-radius:14px;overflow:hidden;margin-bottom:1.5rem;">
+
+  <!-- Header hijau -->
+  <div style="background:linear-gradient(135deg,#064E3B,#065F46);padding:1.25rem 1.5rem;display:flex;align-items:center;gap:.85rem;">
+    <div style="width:44px;height:44px;background:rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">🎉</div>
+    <div>
+      <p style="font-size:.7rem;color:rgba(255,255,255,.55);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.2rem;">Proses Selesai</p>
+      <p style="font-size:1rem;font-weight:600;color:#fff;">Dokumen Anda Siap Diunduh</p>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div style="padding:1.5rem;">
+    <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:1rem;">
+      <span style="font-size:2rem;flex-shrink:0;">📄</span>
+      <div style="flex:1;min-width:0;">
+        <p style="font-size:.88rem;font-weight:600;color:#065F46;margin-bottom:.15rem;">
+          {{ permohonan.hasil_akta.nama_file }}
+        </p>
+        <p style="font-size:.75rem;color:#059669;">
+          Diterbitkan: {{ permohonan.hasil_akta.diunggah_pada|date:"d F Y, H:i" }} WIB
+        </p>
+        {% if permohonan.hasil_akta.catatan %}
+        <p style="font-size:.78rem;color:#047857;margin-top:.4rem;font-style:italic;line-height:1.5;">
+          💬 {{ permohonan.hasil_akta.catatan }}
+        </p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Tombol Download -->
+    <a href="{{ permohonan.hasil_akta.file.url }}"
+       download="{{ permohonan.hasil_akta.nama_file }}"
+       style="display:flex;align-items:center;justify-content:center;gap:.6rem;
+              width:100%;padding:.9rem;border-radius:9px;
+              background:linear-gradient(135deg,#065F46,#047857);
+              color:#fff;font-family:inherit;font-size:.95rem;font-weight:700;
+              text-decoration:none;
+              box-shadow:0 4px 16px rgba(5,150,105,.3);
+              transition:transform .2s,box-shadow .2s;"
+       onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 22px rgba(5,150,105,.4)';"
+       onmouseout="this.style.transform='';this.style.boxShadow='0 4px 16px rgba(5,150,105,.3)';">
+      ⬇️ Unduh Dokumen Keabsahan Akta
+    </a>
+
+    <p style="font-size:.75rem;color:#6B7280;text-align:center;margin-top:.85rem;line-height:1.6;">
+      Dokumen ini diterbitkan oleh Dinas Kependudukan dan Pencatatan Sipil Kabupaten Magetan.<br/>
+      Simpan dokumen ini sebagai arsip resmi Anda.
+    </p>
+  </div>
+</div>
+{% endif %}
+
+
+{% if permohonan.status == "selesai" and not permohonan.hasil_akta %}
+<!-- Selesai tapi belum ada file — tampilkan info menunggu -->
+<div style="background:#FEF3C7;border:1px solid #FDE68A;border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;gap:1rem;align-items:flex-start;">
+  <span style="font-size:1.3rem;flex-shrink:0;">⏳</span>
+  <div>
+    <p style="font-weight:600;font-size:.875rem;color:#92400E;margin-bottom:.25rem;">Dokumen Sedang Disiapkan</p>
+    <p style="font-size:.82rem;color:#B45309;line-height:1.6;">
+      Permohonan Anda telah selesai diproses. Petugas sedang menyiapkan dokumen hasil keabsahan akta. Mohon pantau halaman ini secara berkala.
+    </p>
+  </div>
+</div>
+{% endif %}
+
+<!-- RIWAYAT DETAIL -->
+{% if riwayat %}
+<div class="card">
+  <div class="card-header">
+    <div class="card-header-icon" style="background:#F3F4F6;">🕐</div>
+    <div><h3>Log Aktivitas</h3></div>
+  </div>
+  <div class="card-body">
+    {% for r in riwayat %}
+    <div style="display:flex;gap:.75rem;align-items:flex-start;padding:.6rem 0;border-bottom:1px solid #F3F4F6;">
+      <span style="font-size:.75rem;color:var(--abu);min-width:120px;flex-shrink:0;">{{ r.dibuat_pada|date:"d M Y H:i" }}</span>
+      <span style="font-size:.82rem;color:var(--gelap);">Status diubah ke <strong>{{ r.get_status_baru_display }}</strong>{% if r.catatan %} — {{ r.catatan }}{% endif %}</span>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<div class="btn-row">
+  <a href="{% url 'permohonan:daftar' %}" class="btn btn-outline">← Semua Permohonan</a>
+  {% if permohonan.status == "selesai" %}
+  <span class="btn btn-success">🎉 Selesai Diproses</span>
+  {% endif %}
+</div>
+
+{% endblock %}

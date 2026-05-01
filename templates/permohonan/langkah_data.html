@@ -1,0 +1,129 @@
+{% extends "permohonan/base_permohonan.html" %}
+{% block title %}Data Akta Kelahiran{% endblock %}
+
+{% block content %}
+<form method="POST" novalidate>
+{% csrf_token %}
+
+{% if form.non_field_errors %}
+  <div style="background:#FEE2E2;color:#991B1B;padding:.75rem 1rem;border-radius:8px;margin-bottom:1rem;font-size:.875rem;">
+    {% for e in form.non_field_errors %}{{ e }}{% endfor %}
+  </div>
+{% endif %}
+
+<!-- DATA ANAK -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-header-icon" style="background:#FEF3C7;">👶</div>
+    <div>
+      <h3>Data Anak</h3>
+      <p>Isi sesuai akta kelahiran yang akan diverifikasi</p>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="form-grid">
+      <div class="form-group full">
+        <label for="{{ form.nama_anak.id_for_label }}">Nama Lengkap Anak</label>
+        {{ form.nama_anak }}
+        {% if form.nama_anak.errors %}<ul class="field-errors">{% for e in form.nama_anak.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+      </div>
+      <div class="form-group">
+        <label for="{{ form.nik_anak.id_for_label }}">NIK Anak</label>
+        {{ form.nik_anak }}
+        {% if form.nik_anak.errors %}<ul class="field-errors">{% for e in form.nik_anak.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+      </div>
+      <div class="form-group">
+        <label for="{{ form.nomor_akta.id_for_label }}">Nomor Akta Kelahiran</label>
+        {{ form.nomor_akta }}
+        {% if form.nomor_akta.errors %}<ul class="field-errors">{% for e in form.nomor_akta.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+      </div>
+      <div class="form-group">
+        <label for="{{ form.tempat_lahir.id_for_label }}">Tempat Lahir</label>
+        {{ form.tempat_lahir }}
+        {% if form.tempat_lahir.errors %}<ul class="field-errors">{% for e in form.tempat_lahir.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+      </div>
+      <div class="form-group">
+        <label for="{{ form.tanggal_lahir.id_for_label }}">Tanggal Lahir</label>
+        {{ form.tanggal_lahir }}
+        {% if form.tanggal_lahir.errors %}<ul class="field-errors">{% for e in form.tanggal_lahir.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DATA AYAH -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-header-icon" style="background:#DBEAFE;">👨</div>
+    <div>
+      <h3>Data Ayah</h3>
+      <p>Informasi identitas ayah kandung</p>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="form-grid">
+      <div class="form-group full">
+        <label for="{{ form.nama_ayah.id_for_label }}">Nama Lengkap Ayah</label>
+        {{ form.nama_ayah }}
+        {% if form.nama_ayah.errors %}<ul class="field-errors">{% for e in form.nama_ayah.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+      </div>
+      <div class="form-group">
+        <label for="{{ form.nik_ayah.id_for_label }}">NIK Ayah</label>
+        {{ form.nik_ayah }}
+        {% if form.nik_ayah.errors %}<ul class="field-errors">{% for e in form.nik_ayah.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+      </div>
+      <div class="form-group">
+        <label for="{{ form.no_nikah_ayah.id_for_label }}">No. Buku Nikah Ayah <span class="opsional">(opsional)</span></label>
+        {{ form.no_nikah_ayah }}
+        {% if form.no_nikah_ayah.errors %}<ul class="field-errors">{% for e in form.no_nikah_ayah.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DATA IBU -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-header-icon" style="background:#FCE7F3;">👩</div>
+    <div>
+      <h3>Data Ibu</h3>
+      <p>Informasi identitas ibu kandung</p>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="form-grid">
+      <div class="form-group full">
+        <label for="{{ form.nama_ibu.id_for_label }}">Nama Lengkap Ibu</label>
+        {{ form.nama_ibu }}
+        {% if form.nama_ibu.errors %}<ul class="field-errors">{% for e in form.nama_ibu.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+      </div>
+      <div class="form-group">
+        <label for="{{ form.nik_ibu.id_for_label }}">NIK Ibu</label>
+        {{ form.nik_ibu }}
+        {% if form.nik_ibu.errors %}<ul class="field-errors">{% for e in form.nik_ibu.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+      </div>
+      <div class="form-group">
+        <label for="{{ form.no_nikah_ibu.id_for_label }}">No. Buku Nikah Ibu <span class="opsional">(opsional)</span></label>
+        {{ form.no_nikah_ibu }}
+        {% if form.no_nikah_ibu.errors %}<ul class="field-errors">{% for e in form.no_nikah_ibu.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+      </div>
+    </div>
+
+    <!-- Tanggal Menikah (opsional) -->
+    <div class="form-grid" style="margin-top:.5rem;">
+      <div class="form-group">
+        <label for="{{ form.tanggal_menikah.id_for_label }}">Tanggal Menikah <span class="opsional">(opsional)</span></label>
+        {{ form.tanggal_menikah }}
+        {% if form.tanggal_menikah.errors %}<ul class="field-errors">{% for e in form.tanggal_menikah.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="btn-row">
+  <a href="{% url 'dashboard' %}" class="btn btn-outline">← Kembali ke Dashboard</a>
+  <button type="submit" class="btn btn-primary">Simpan & Lanjutkan ke Upload Berkas →</button>
+</div>
+
+</form>
+{% endblock %}

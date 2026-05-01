@@ -1,0 +1,114 @@
+{% extends "admin_custom/base_admin.html" %}
+{% block title %}Daftar Permohonan{% endblock %}
+{% block page_title %}Semua Permohonan{% endblock %}
+
+{% block extra_style %}
+<style>
+.toolbar{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;flex-wrap:wrap;}
+.search-wrap{position:relative;flex:1;min-width:220px;}
+.search-wrap input{width:100%;padding:.55rem .9rem .55rem 2.4rem;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:.85rem;outline:none;background:#fff;transition:border-color .2s;}
+.search-wrap input:focus{border-color:var(--navy);}
+.search-icon{position:absolute;left:.75rem;top:50%;transform:translateY(-50%);font-size:.95rem;pointer-events:none;}
+.filter-select{padding:.55rem .9rem;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:.83rem;background:#fff;outline:none;cursor:pointer;color:var(--teks);}
+
+.result-info{font-size:.8rem;color:var(--abu);margin-bottom:.75rem;}
+.result-info strong{color:var(--teks);}
+
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:.84rem;}
+th{text-align:left;font-size:.71rem;font-weight:700;color:var(--abu);text-transform:uppercase;letter-spacing:.07em;padding:.65rem 1rem;border-bottom:2px solid #F3F4F6;white-space:nowrap;background:#FAFAFA;}
+td{padding:.7rem 1rem;border-bottom:1px solid #F9FAFB;vertical-align:middle;}
+tr:hover td{background:#FAFAFA;}
+.nama-anak{font-weight:600;font-size:.875rem;}
+.sub{font-size:.75rem;color:var(--abu);margin-top:.1rem;}
+.no-akta{font-family:monospace;font-size:.8rem;background:#F3F4F6;padding:2px 7px;border-radius:4px;}
+
+.empty-state{text-align:center;padding:4rem;color:var(--abu);}
+.empty-icon{font-size:2.5rem;margin-bottom:.75rem;}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- TOOLBAR -->
+<form method="GET" class="toolbar">
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" name="q" value="{{ q }}" placeholder="Cari nama anak, NIK, pemohon, nomor akta..."/>
+  </div>
+  <select name="status" class="filter-select" onchange="this.form.submit()">
+    <option value="">Semua Status</option>
+    {% for val, label in StatusPermohonan.choices %}
+      <option value="{{ val }}" {% if status_filter == val %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="btn btn-primary btn-sm">Terapkan</button>
+  {% if q or status_filter %}
+    <a href="{% url 'admin_custom:daftar' %}" class="btn btn-outline btn-sm">Reset</a>
+  {% endif %}
+</form>
+
+<p class="result-info">Menampilkan <strong>{{ jumlah }}</strong> permohonan{% if q %} untuk "<strong>{{ q }}</strong>"{% endif %}{% if status_filter %} dengan status <strong>{{ status_filter }}</strong>{% endif %}</p>
+
+<!-- TABEL -->
+<div class="card" style="padding:0;">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Data Anak</th>
+          <th>Pemohon</th>
+          <th>No. Akta</th>
+          <th>TTL</th>
+          <th>Diajukan</th>
+          <th>Status</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in permohonan_list %}
+        <tr>
+          <td style="color:var(--abu);font-size:.75rem;">{{ forloop.counter }}</td>
+          <td>
+            <div class="nama-anak">{{ p.nama_anak }}</div>
+            <div class="sub">NIK: {{ p.nik_anak }}</div>
+          </td>
+          <td>
+            <div>{{ p.pemohon.nama }}</div>
+            <div class="sub">{{ p.pemohon.no_hp }}</div>
+          </td>
+          <td><span class="no-akta">{{ p.nomor_akta }}</span></td>
+          <td>
+            <div>{{ p.tempat_lahir }}</div>
+            <div class="sub">{{ p.tanggal_lahir|date:"d M Y" }}</div>
+          </td>
+          <td>
+            {% if p.diajukan_pada %}
+              <div>{{ p.diajukan_pada|date:"d M Y" }}</div>
+              <div class="sub">{{ p.diajukan_pada|date:"H:i" }} WIB</div>
+            {% else %}
+              <span style="color:var(--abu);font-size:.78rem;">—</span>
+            {% endif %}
+          </td>
+          <td><span class="sbadge sb-{{ p.status }}">{{ p.get_status_display }}</span></td>
+          <td>
+            <a href="{% url 'admin_custom:detail' pk=p.pk %}" class="btn btn-gold btn-sm">Buka Detail</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="8">
+            <div class="empty-state">
+              <div class="empty-icon">📭</div>
+              <p>Tidak ada permohonan{% if q or status_filter %} yang sesuai filter{% endif %}.</p>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

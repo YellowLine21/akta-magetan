@@ -1,0 +1,47 @@
+{% extends "permohonan/base_permohonan.html" %}
+{% block title %}Permohonan Saya{% endblock %}
+
+{% block content %}
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
+  <h2 style="font-family:'Playfair Display',serif;font-size:1.5rem;">Permohonan Saya</h2>
+  <a href="{% url 'permohonan:langkah_data' %}" class="btn btn-primary">+ Buat Permohonan Baru</a>
+</div>
+
+{% if permohonan_list %}
+  {% for p in permohonan_list %}
+  <div class="card" style="margin-bottom:1rem;">
+    <div class="card-body" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+      <div>
+        <p style="font-weight:600;font-size:.95rem;margin-bottom:.2rem;">{{ p.nama_anak }}</p>
+        <p style="font-size:.8rem;color:var(--abu);">No. Akta: {{ p.nomor_akta }} &nbsp;|&nbsp; Dibuat: {{ p.dibuat_pada|date:"d M Y" }}</p>
+      </div>
+      <div style="display:flex;align-items:center;gap:.75rem;">
+        {% if p.status == "selesai" %}
+          <span style="background:#D1FAE5;color:#065F46;padding:.3rem .85rem;border-radius:999px;font-size:.78rem;font-weight:700;">✅ Selesai</span>
+        {% elif p.status == "ditolak" %}
+          <span style="background:#FEE2E2;color:#991B1B;padding:.3rem .85rem;border-radius:999px;font-size:.78rem;font-weight:700;">❌ Ditolak</span>
+        {% elif p.status == "diproses" %}
+          <span style="background:#EDE9FE;color:#5B21B6;padding:.3rem .85rem;border-radius:999px;font-size:.78rem;font-weight:700;">🔄 Diproses</span>
+        {% elif p.status == "verifikasi" %}
+          <span style="background:#FEF3C7;color:#92400E;padding:.3rem .85rem;border-radius:999px;font-size:.78rem;font-weight:700;">🔍 Verifikasi</span>
+        {% elif p.status == "diajukan" %}
+          <span style="background:#DBEAFE;color:#1E40AF;padding:.3rem .85rem;border-radius:999px;font-size:.78rem;font-weight:700;">📬 Diajukan</span>
+        {% else %}
+          <span style="background:#F3F4F6;color:var(--abu);padding:.3rem .85rem;border-radius:999px;font-size:.78rem;font-weight:700;">📝 Draft</span>
+        {% endif %}
+        <a href="{% url 'permohonan:notifikasi' pk=p.pk %}" class="btn btn-outline" style="padding:.45rem 1rem;font-size:.8rem;">Lihat Status</a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+{% else %}
+  <div class="card">
+    <div class="card-body" style="text-align:center;padding:3rem;">
+      <div style="font-size:2.5rem;margin-bottom:1rem;">📋</div>
+      <p style="font-weight:600;margin-bottom:.5rem;">Belum Ada Permohonan</p>
+      <p style="font-size:.875rem;color:var(--abu);margin-bottom:1.5rem;">Buat permohonan pertama Anda untuk memulai proses keabsahan akta kelahiran.</p>
+      <a href="{% url 'permohonan:langkah_data' %}" class="btn btn-primary">Buat Permohonan Sekarang</a>
+    </div>
+  </div>
+{% endif %}
+{% endblock %}

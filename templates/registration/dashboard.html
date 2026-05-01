@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard — Akta Kelahiran Magetan</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--merah:#C0392B;--emas:#D4A017;--gelap:#1A1A2E;--abu:#6B7280;--bg:#F8F7F4;}
+    body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);min-height:100vh;}
+    nav{background:linear-gradient(90deg,#1A1A2E,#0F3460);padding:1rem 2.5rem;display:flex;align-items:center;justify-content:space-between;}
+    .nav-brand{display:flex;align-items:center;gap:.75rem;}
+    .nav-logo{width:40px;height:40px;background:linear-gradient(135deg,var(--emas),#B8860B);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;}
+    .nav-title{font-size:.9rem;color:rgba(255,255,255,.85);font-weight:500;}
+    .btn-logout{padding:.45rem 1.2rem;background:rgba(192,57,43,.8);border:none;border-radius:6px;color:#fff;font-family:inherit;font-size:.82rem;font-weight:600;cursor:pointer;text-decoration:none;}
+    .container{max-width:900px;margin:2.5rem auto;padding:0 1.5rem;}
+    .welcome-card{background:linear-gradient(135deg,#1A1A2E,#0F3460);border-radius:14px;padding:2rem;margin-bottom:2rem;color:#fff;position:relative;overflow:hidden;}
+    .welcome-card::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(45deg,rgba(212,160,23,.06) 0,rgba(212,160,23,.06) 1px,transparent 0,transparent 50%),repeating-linear-gradient(-45deg,rgba(212,160,23,.06) 0,rgba(212,160,23,.06) 1px,transparent 0,transparent 50%);background-size:28px 28px;}
+    .welcome-inner{position:relative;z-index:2;}
+    .welcome-label{font-size:.72rem;color:var(--emas);letter-spacing:.12em;text-transform:uppercase;font-weight:700;margin-bottom:.5rem;}
+    .welcome-name{font-family:'Playfair Display',serif;font-size:1.8rem;margin-bottom:.35rem;}
+    .welcome-sub{font-size:.875rem;color:rgba(255,255,255,.6);}
+    .info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem;}
+    .info-box{background:#fff;border-radius:10px;padding:1.25rem;border:1px solid #E5E7EB;}
+    .info-box-label{font-size:.72rem;color:var(--abu);text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:.4rem;}
+    .info-box-value{font-size:.95rem;font-weight:600;color:var(--gelap);}
+    .notice{background:#FEF3C7;border:1px solid #FDE68A;border-radius:10px;padding:1.25rem;font-size:.875rem;color:#92400E;line-height:1.6;}
+    .notice strong{display:block;margin-bottom:.25rem;}
+  </style>
+</head>
+<body>
+<nav>
+  <div class="nav-brand">
+    {% load static %}
+    <img src="{% static 'img/logo_disdukcapil.png' %}"
+     alt="Logo Disdukcapil Magetan"
+     style="width:44px;height:44px;border-radius:50%;object-fit:cover;"/>
+    <span class="nav-title">Akta Kelahiran — Kabupaten Magetan</span>
+  </div>
+  <a href="{% url 'logout' %}" class="btn-logout">Keluar</a>
+</nav>
+<div class="container">
+  <div class="welcome-card">
+    <div class="welcome-inner">
+      <p class="welcome-label">Dashboard Pengguna</p>
+      <h1 class="welcome-name">Halo, {{ user.nama }} 👋</h1>
+      <p class="welcome-sub">Selamat datang di layanan Akta Kelahiran Digital Kabupaten Magetan.</p>
+    </div>
+  </div>
+
+  <div class="info-grid">
+    <div class="info-box">
+      <div class="info-box-label">NIK</div>
+      <div class="info-box-value">{{ user.nik }}</div>
+    </div>
+    
+    <div class="info-box">
+      <div class="info-box-label">Email</div>
+      <div class="info-box-value">{{ user.email }}</div>
+    </div>
+    <div class="info-box">
+      <div class="info-box-label">Nomor HP</div>
+      <div class="info-box-value">{{ user.no_hp }}</div>
+    </div>
+    <div class="info-box">
+      <div class="info-box-label">Status Email</div>
+      <div class="info-box-value" style="color:{% if user.email_verified %}#065F46{% else %}#92400E{% endif %};">
+        {% if user.email_verified %}✅ Terverifikasi{% else %}⚠️ Belum Diverifikasi{% endif %}
+      </div>
+    </div>
+  </div>
+<!-- Tambahkan setelah .info-grid -->
+<div style="display:flex;gap:1rem;margin-top:1.5rem;flex-wrap:wrap;">
+  <a href="{% url 'permohonan:langkah_data' %}"
+     style="padding:.75rem 1.75rem;background:linear-gradient(135deg,#C0392B,#96281B);
+            color:#fff;border-radius:8px;font-weight:600;text-decoration:none;font-size:.9rem;">
+    + Buat Permohonan Baru
+  </a>
+  <a href="{% url 'permohonan:daftar' %}"
+     style="padding:.75rem 1.75rem;background:#fff;border:1.5px solid #D1D5DB;
+            color:#1A1A2E;border-radius:8px;font-weight:600;text-decoration:none;font-size:.9rem;">
+    Lihat Permohonan Saya
+  </a>
+</div>
+  <div class="notice">
+    <strong>Terimakasih anda sudah terdaftar ke sistem kami</strong>
+    Dengan senang hati kami akan melayani kebutuhan administrasi kependudukan Anda. Pastikan untuk selalu memperbarui informasi kontak Anda agar kami dapat memberikan layanan terbaik. Jika Anda memiliki pertanyaan atau membutuhkan bantuan, jangan ragu untuk menghubungi kami melalui halaman kontak atau email resmi kami.
+  </div>
+</div>
+</body>
+</html>

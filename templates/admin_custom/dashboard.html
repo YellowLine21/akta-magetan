@@ -1,0 +1,123 @@
+{% extends "admin_custom/base_admin.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block extra_style %}
+<style>
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1rem;margin-bottom:1.75rem;}
+.stat-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s;}
+.stat-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.07);}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.stat-card.total::before  {background:linear-gradient(90deg,var(--navy),var(--navy3));}
+.stat-card.diajukan::before{background:#2563EB;}
+.stat-card.verifikasi::before{background:#D97706;}
+.stat-card.diproses::before {background:#7C3AED;}
+.stat-card.selesai::before  {background:#059669;}
+.stat-card.ditolak::before  {background:#B91C1C;}
+.stat-num{font-family:'DM Serif Display',serif;font-size:2rem;color:var(--teks);line-height:1;}
+.stat-lbl{font-size:.75rem;color:var(--abu);margin-top:.35rem;font-weight:500;}
+.stat-icon{position:absolute;right:1rem;top:1.1rem;font-size:1.6rem;opacity:.15;}
+
+.section-title{font-family:'DM Serif Display',serif;font-size:1.1rem;margin-bottom:1rem;}
+
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:.84rem;}
+th{text-align:left;font-size:.72rem;font-weight:700;color:var(--abu);text-transform:uppercase;letter-spacing:.07em;padding:.6rem .9rem;border-bottom:2px solid #F3F4F6;white-space:nowrap;}
+td{padding:.65rem .9rem;border-bottom:1px solid #F9FAFB;vertical-align:middle;}
+tr:hover td{background:#FAFAFA;}
+td .nama{font-weight:600;color:var(--teks);}
+td .sub{font-size:.75rem;color:var(--abu);margin-top:.1rem;}
+
+.empty-state{text-align:center;padding:3rem;color:var(--abu);}
+.empty-state .icon{font-size:2.5rem;margin-bottom:.75rem;}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- STATISTIK -->
+<div class="stat-grid">
+  <div class="stat-card total">
+    <span class="stat-icon">📊</span>
+    <div class="stat-num">{{ total }}</div>
+    <div class="stat-lbl">Total Permohonan</div>
+  </div>
+  <div class="stat-card diajukan">
+    <span class="stat-icon">📬</span>
+    <div class="stat-num">{{ per_status.diajukan }}</div>
+    <div class="stat-lbl">Perlu Ditinjau</div>
+  </div>
+  <div class="stat-card verifikasi">
+    <span class="stat-icon">🔍</span>
+    <div class="stat-num">{{ per_status.verifikasi }}</div>
+    <div class="stat-lbl">Diverifikasi</div>
+  </div>
+  <div class="stat-card diproses">
+    <span class="stat-icon">🔄</span>
+    <div class="stat-num">{{ per_status.diproses }}</div>
+    <div class="stat-lbl">Diproses</div>
+  </div>
+  <div class="stat-card selesai">
+    <span class="stat-icon">✅</span>
+    <div class="stat-num">{{ per_status.selesai }}</div>
+    <div class="stat-lbl">Selesai</div>
+  </div>
+  <div class="stat-card ditolak">
+    <span class="stat-icon">❌</span>
+    <div class="stat-num">{{ per_status.ditolak }}</div>
+    <div class="stat-lbl">Ditolak</div>
+  </div>
+</div>
+
+<!-- TERBARU -->
+<div class="card">
+  <div class="card-header">
+    <h3>Permohonan Terbaru</h3>
+    <a href="{% url 'admin_custom:daftar' %}" class="btn btn-outline btn-sm">Lihat Semua →</a>
+  </div>
+  <div class="card-body" style="padding:0;">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Nama Anak</th>
+            <th>Pemohon</th>
+            <th>No. Akta</th>
+            <th>Tanggal Masuk</th>
+            <th>Status</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in terbaru %}
+          <tr>
+            <td>
+              <div class="nama">{{ p.nama_anak }}</div>
+              <div class="sub">NIK: {{ p.nik_anak }}</div>
+            </td>
+            <td>
+              <div>{{ p.pemohon.nama }}</div>
+              <div class="sub">{{ p.pemohon.no_hp }}</div>
+            </td>
+            <td>{{ p.nomor_akta }}</td>
+            <td>
+              <div>{{ p.dibuat_pada|date:"d M Y" }}</div>
+              <div class="sub">{{ p.dibuat_pada|date:"H:i" }} WIB</div>
+            </td>
+            <td>
+              <span class="sbadge sb-{{ p.status }}">{{ p.get_status_display }}</span>
+            </td>
+            <td>
+              <a href="{% url 'admin_custom:detail' pk=p.pk %}" class="btn btn-outline btn-sm">Detail</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6"><div class="empty-state"><div class="icon">📭</div><p>Belum ada permohonan masuk.</p></div></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

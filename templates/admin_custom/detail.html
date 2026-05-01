@@ -1,0 +1,386 @@
+{% extends "admin_custom/base_admin.html" %}
+{% block title %}Detail — {{ p.nama_anak }}{% endblock %}
+{% block page_title %}Detail Permohonan{% endblock %}
+
+{% block extra_style %}
+<style>
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;}
+.page-header-left h2{font-family:'DM Serif Display',serif;font-size:1.5rem;margin-bottom:.25rem;}
+.page-header-left p{font-size:.82rem;color:var(--abu);}
+.breadcrumb{font-size:.78rem;color:var(--abu);margin-bottom:.5rem;}
+.breadcrumb a{color:var(--navy);text-decoration:none;}
+.breadcrumb a:hover{text-decoration:underline;}
+
+.layout{display:grid;grid-template-columns:1fr 340px;gap:1.25rem;align-items:start;}
+
+/* DATA TABLES */
+.data-section{margin-bottom:1.5rem;}
+.data-section-title{font-size:.7rem;font-weight:700;color:var(--emas2);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.65rem;padding-bottom:.4rem;border-bottom:2px solid #FEF3C7;}
+.data-table{width:100%;border-collapse:collapse;font-size:.85rem;}
+.data-table tr td{padding:.5rem .25rem;border-bottom:1px solid #F9FAFB;vertical-align:top;}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table td:first-child{color:var(--abu);width:44%;font-size:.8rem;padding-right:.75rem;}
+.data-table td:last-child{font-weight:500;color:var(--teks);}
+.val-highlight{font-family:monospace;background:#F3F4F6;padding:2px 7px;border-radius:4px;font-size:.82rem;}
+
+/* BERKAS */
+.berkas-list{display:flex;flex-direction:column;gap:.65rem;}
+.berkas-row{display:flex;align-items:center;gap:.75rem;padding:.75rem;background:#FAFAFA;border:1px solid var(--border);border-radius:9px;transition:border-color .2s,background .2s;}
+.berkas-row:hover{background:#F3F4F6;border-color:#C0C0B8;}
+.berkas-icon{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.berkas-info{flex:1;min-width:0;}
+.berkas-jenis{font-size:.82rem;font-weight:600;color:var(--teks);}
+.berkas-nama{font-size:.74rem;color:var(--abu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:.1rem;}
+.berkas-tanggal{font-size:.7rem;color:var(--abu);margin-top:.1rem;}
+.berkas-link{padding:.35rem .75rem;border-radius:6px;background:var(--navy);color:#fff;font-size:.75rem;font-weight:600;text-decoration:none;flex-shrink:0;white-space:nowrap;}
+.berkas-link:hover{background:var(--navy2);}
+.berkas-missing{opacity:.5;background:#FEF2F2;border-color:#FECACA;}
+.berkas-missing .berkas-jenis{color:var(--merah);}
+
+/* SIDEBAR KANAN */
+.sidebar-right{display:flex;flex-direction:column;gap:1.25rem;}
+
+/* STATUS PANEL */
+.status-panel{background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.status-header{padding:1rem 1.25rem;background:var(--navy);color:#fff;}
+.status-header p{font-size:.7rem;color:rgba(255,255,255,.5);margin-bottom:.3rem;letter-spacing:.08em;text-transform:uppercase;}
+.current-status{display:flex;align-items:center;gap:.6rem;}
+.current-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.current-label{font-size:1rem;font-weight:600;}
+
+.progress-bar-wrap{background:rgba(255,255,255,.15);border-radius:999px;height:6px;margin:.75rem 0 0;}
+.progress-bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--emas),#F59E0B);transition:width .6s;}
+
+.status-form{padding:1.25rem;}
+.status-form label{font-size:.8rem;font-weight:600;color:var(--teks);display:block;margin-bottom:.4rem;}
+.status-form select, .status-form textarea{width:100%;padding:.6rem .85rem;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:.84rem;outline:none;transition:border-color .2s;background:#fff;}
+.status-form select:focus, .status-form textarea:focus{border-color:var(--navy);}
+.status-form textarea{min-height:80px;resize:vertical;margin-top:.15rem;}
+.status-form .hint{font-size:.73rem;color:var(--abu);margin-top:.3rem;}
+
+/* RIWAYAT */
+.riwayat-list{display:flex;flex-direction:column;gap:0;}
+.riwayat-item{display:flex;gap:.75rem;padding:.65rem 0;border-bottom:1px solid #F3F4F6;position:relative;}
+.riwayat-item:last-child{border-bottom:none;}
+.riwayat-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;flex-shrink:0;background:#F3F4F6;color:var(--abu);}
+.riwayat-content{flex:1;}
+.riwayat-line{font-size:.82rem;color:var(--teks);}
+.riwayat-meta{font-size:.72rem;color:var(--abu);margin-top:.15rem;}
+.riwayat-note{font-size:.78rem;color:var(--abu);background:#F9FAFB;padding:.4rem .65rem;border-radius:6px;margin-top:.3rem;border-left:3px solid #E5E7EB;}
+
+/* PEMOHON INFO */
+.pemohon-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:1.25rem;}
+.pemohon-avatar{width:44px;height:44px;border-radius:50%;background:var(--navy);color:var(--emas);display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:1.2rem;margin-bottom:.85rem;}
+.pemohon-name{font-weight:600;font-size:.95rem;margin-bottom:.15rem;}
+.pemohon-detail{font-size:.8rem;color:var(--abu);line-height:1.9;}
+
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr;}
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="breadcrumb">
+  <a href="{% url 'admin_custom:dashboard' %}">Beranda</a> →
+  <a href="{% url 'admin_custom:daftar' %}">Semua Permohonan</a> →
+  {{ p.nama_anak }}
+</div>
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h2>{{ p.nama_anak }}</h2>
+    <p>No. Akta: <strong>{{ p.nomor_akta }}</strong> &nbsp;|&nbsp; Dibuat: {{ p.dibuat_pada|date:"d M Y, H:i" }} WIB</p>
+  </div>
+  <span class="sbadge sb-{{ p.status }}" style="font-size:.85rem;padding:.4rem 1rem;">{{ p.get_status_display }}</span>
+</div>
+
+<div class="layout">
+
+  <!-- KOLOM KIRI: DATA + BERKAS + RIWAYAT -->
+  <div>
+
+    <!-- DATA ANAK -->
+    <div class="card" style="margin-bottom:1.25rem;">
+      <div class="card-header"><h3>👶 Data Anak</h3></div>
+      <div class="card-body">
+        <table class="data-table">
+          <tr><td>Nama Lengkap</td><td><strong>{{ p.nama_anak }}</strong></td></tr>
+          <tr><td>NIK Anak</td><td><span class="val-highlight">{{ p.nik_anak }}</span></td></tr>
+          <tr><td>Tempat Lahir</td><td>{{ p.tempat_lahir }}</td></tr>
+          <tr><td>Tanggal Lahir</td><td>{{ p.tanggal_lahir|date:"d F Y" }}</td></tr>
+          <tr><td>Nomor Akta Kelahiran</td><td><span class="val-highlight">{{ p.nomor_akta }}</span></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- DATA ORANG TUA -->
+    <div class="card" style="margin-bottom:1.25rem;">
+      <div class="card-header"><h3>👨‍👩 Data Orang Tua</h3></div>
+      <div class="card-body">
+        <div class="data-section">
+          <p class="data-section-title">Ayah</p>
+          <table class="data-table">
+            <tr><td>Nama Ayah</td><td><strong>{{ p.nama_ayah }}</strong></td></tr>
+            <tr><td>NIK Ayah</td><td><span class="val-highlight">{{ p.nik_ayah }}</span></td></tr>
+            <tr><td>No. Buku Nikah</td><td>{{ p.no_nikah_ayah|default:"—" }}</td></tr>
+          </table>
+        </div>
+        <div class="data-section">
+          <p class="data-section-title">Ibu</p>
+          <table class="data-table">
+            <tr><td>Nama Ibu</td><td><strong>{{ p.nama_ibu }}</strong></td></tr>
+            <tr><td>NIK Ibu</td><td><span class="val-highlight">{{ p.nik_ibu }}</span></td></tr>
+            <tr><td>No. Buku Nikah</td><td>{{ p.no_nikah_ibu|default:"—" }}</td></tr>
+          </table>
+        </div>
+        <div class="data-section" style="margin-bottom:0;">
+          <p class="data-section-title">Pernikahan</p>
+          <table class="data-table">
+            <tr><td>Tanggal Menikah</td><td>{{ p.tanggal_menikah|date:"d F Y"|default:"—" }}</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- BERKAS YANG DIUNGGAH -->
+    <div class="card" style="margin-bottom:1.25rem;">
+      <div class="card-header">
+        <h3>📎 Berkas yang Diunggah</h3>
+        <span style="font-size:.78rem;color:var(--abu);">{{ berkas_list|length }} dari 5 berkas</span>
+      </div>
+      <div class="card-body">
+        {% with berkas_dict=berkas_list %}
+        <div class="berkas-list">
+
+          {% comment %}Define all required berkas{% endcomment %}
+          {% for b in berkas_list %}
+          <div class="berkas-row">
+            <div class="berkas-icon" style="background:#EDE9FE;">📄</div>
+            <div class="berkas-info">
+              <div class="berkas-jenis">{{ b.get_jenis_display }}</div>
+              <div class="berkas-nama">{{ b.nama_file }}</div>
+              <div class="berkas-tanggal">Diunggah: {{ b.diunggah_pada|date:"d M Y, H:i" }} WIB</div>
+            </div>
+            <a href="{{ b.file.url }}" target="_blank" class="berkas-link">Buka File ↗</a>
+          </div>
+          {% empty %}
+          <div style="text-align:center;padding:2rem;color:var(--abu);">
+            <p>Belum ada berkas yang diunggah.</p>
+          </div>
+          {% endfor %}
+
+        </div>
+        {% endwith %}
+      </div>
+    </div>
+
+    <!-- RIWAYAT STATUS -->
+    <div class="card">
+      <div class="card-header"><h3>🕐 Riwayat Status</h3></div>
+      <div class="card-body" style="padding-top:.75rem;padding-bottom:.75rem;">
+        {% if riwayat %}
+        <div class="riwayat-list">
+          {% for r in riwayat %}
+          <div class="riwayat-item">
+            <div class="riwayat-dot">{{ forloop.counter }}</div>
+            <div class="riwayat-content">
+              <p class="riwayat-line">
+                {% if r.status_lama %}
+                  <span class="sbadge sb-{{ r.status_lama }}" style="font-size:.7rem;padding:.15rem .6rem;">{{ r.get_status_lama_display }}</span>
+                  <span style="color:var(--abu);margin:0 .3rem;">→</span>
+                {% endif %}
+                <span class="sbadge sb-{{ r.status_baru }}" style="font-size:.7rem;padding:.15rem .6rem;">{{ r.get_status_baru_display }}</span>
+              </p>
+              <p class="riwayat-meta">
+                {{ r.dibuat_pada|date:"d M Y, H:i" }} WIB
+                {% if r.diubah_oleh %} · oleh {{ r.diubah_oleh.nama }}{% endif %}
+              </p>
+              {% if r.catatan %}
+              <div class="riwayat-note">{{ r.catatan }}</div>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p style="font-size:.85rem;color:var(--abu);text-align:center;padding:1rem;">Belum ada riwayat perubahan status.</p>
+        {% endif %}
+      </div>
+    </div>
+
+  </div><!-- END KOLOM KIRI -->
+
+  <!-- KOLOM KANAN: STATUS PANEL + PEMOHON -->
+  <div class="sidebar-right">
+
+    <!-- UBAH STATUS -->
+    <div class="status-panel">
+      <div class="status-header">
+        <p>Status Saat Ini</p>
+        <div class="current-status">
+          <div class="current-dot" style="background:
+            {% if p.status == 'selesai' %}#34D399
+            {% elif p.status == 'diproses' %}#A78BFA
+            {% elif p.status == 'verifikasi' %}#FCD34D
+            {% elif p.status == 'diajukan' %}#60A5FA
+            {% elif p.status == 'perlu_revisi' or p.status == 'ditolak' %}#F87171
+            {% else %}#9CA3AF{% endif %};"></div>
+          <span class="current-label">{{ p.get_status_display }}</span>
+        </div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" style="width:{{ p.get_progress_persen }}%;"></div>
+        </div>
+      </div>
+
+      <div class="status-form">
+        <form method="POST">
+          {% csrf_token %}
+          <div style="margin-bottom:.85rem;">
+            <label>Ubah Status Permohonan</label>
+            <select name="status_baru">
+              {% for val, label in semua_status %}
+                <option value="{{ val }}" {% if val == p.status %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div style="margin-bottom:1rem;">
+            <label>Catatan untuk Pemohon <span style="font-weight:400;color:var(--abu);">(opsional)</span></label>
+            <textarea name="catatan" placeholder="Contoh: Dokumen KTP kurang jelas, mohon unggah ulang..."></textarea>
+            <p class="hint">Catatan ini akan ditampilkan di halaman status pemohon.</p>
+          </div>
+          <button type="submit" class="btn btn-gold" style="width:100%;justify-content:center;">
+            💾 Simpan Perubahan Status
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- UPLOAD HASIL AKTA -->
+<div style="background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+
+  <!-- Header -->
+  <div style="padding:1rem 1.25rem;background:linear-gradient(135deg,#064E3B,#065F46);color:#fff;">
+    <p style="font-size:.68rem;color:rgba(255,255,255,.5);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem;">Dokumen Hasil</p>
+    <p style="font-size:.95rem;font-weight:600;">Unggah Akta Keabsahan</p>
+  </div>
+
+  <div style="padding:1.25rem;">
+
+    {% if p.hasil_akta %}
+    <!-- Sudah ada hasil — tampilkan info + tombol hapus -->
+    <div style="background:#D1FAE5;border:1px solid #A7F3D0;border-radius:9px;padding:.9rem 1rem;margin-bottom:1rem;">
+      <p style="font-size:.75rem;font-weight:700;color:#065F46;margin-bottom:.35rem;">✅ Dokumen Tersedia</p>
+      <p style="font-size:.82rem;color:#047857;word-break:break-all;">{{ p.hasil_akta.nama_file }}</p>
+      <p style="font-size:.72rem;color:#059669;margin-top:.25rem;">
+        Diunggah: {{ p.hasil_akta.diunggah_pada|date:"d M Y, H:i" }} WIB
+      </p>
+      {% if p.hasil_akta.catatan %}
+      <p style="font-size:.75rem;color:#047857;margin-top:.35rem;font-style:italic;">"{{ p.hasil_akta.catatan }}"</p>
+      {% endif %}
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:.5rem;">
+      <a href="{{ p.hasil_akta.file.url }}" target="_blank" class="btn btn-gold" style="justify-content:center;">
+        ↗ Buka Dokumen
+      </a>
+      <form method="POST" action="{% url 'admin_custom:hapus_hasil' pk=p.pk %}"
+            onsubmit="return confirm('Hapus dokumen ini? Pemohon tidak bisa lagi mendownload.')">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger" style="width:100%;justify-content:center;">
+          🗑 Hapus & Ganti
+        </button>
+      </form>
+    </div>
+
+    <p style="font-size:.73rem;color:var(--abu);margin-top:.75rem;line-height:1.5;">
+      Untuk mengganti dokumen, hapus dulu lalu unggah ulang.
+    </p>
+
+    {% else %}
+    <!-- Belum ada hasil — tampilkan form upload -->
+    <form method="POST"
+          action="{% url 'admin_custom:upload_hasil' pk=p.pk %}"
+          enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <!-- Area drag & drop visual -->
+      <label for="file_hasil"
+             style="display:block;border:2px dashed #D1D5DB;border-radius:10px;padding:1.5rem 1rem;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;margin-bottom:.85rem;"
+             id="upload-label">
+        <div style="font-size:1.75rem;margin-bottom:.5rem;" id="upload-icon">📤</div>
+        <p style="font-size:.82rem;font-weight:600;color:var(--teks);margin-bottom:.2rem;" id="upload-fname">Pilih atau Klik di Sini</p>
+        <p style="font-size:.73rem;color:var(--abu);">PDF, JPG, PNG — maks. 10 MB</p>
+        <input type="file"
+               id="file_hasil"
+               name="file_hasil"
+               accept=".pdf,.jpg,.jpeg,.png"
+               style="display:none;"
+               required
+               onchange="previewFile(this)"/>
+      </label>
+
+      <div style="margin-bottom:.85rem;">
+        <label style="font-size:.8rem;font-weight:600;color:var(--teks);display:block;margin-bottom:.4rem;">
+          Catatan untuk Pemohon <span style="font-weight:400;color:var(--abu);">(opsional)</span>
+        </label>
+        <textarea name="catatan_hasil"
+                  placeholder="Contoh: Dokumen keabsahan akta kelahiran telah selesai diproses. Silakan download."
+                  style="width:100%;padding:.6rem .85rem;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:.83rem;min-height:72px;outline:none;resize:vertical;"></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-gold" style="width:100%;justify-content:center;">
+        ⬆️ Unggah & Tandai Selesai
+      </button>
+    </form>
+
+    <p style="font-size:.73rem;color:var(--abu);margin-top:.75rem;line-height:1.5;text-align:center;">
+      Status permohonan otomatis berubah ke <strong>Selesai</strong> saat dokumen diunggah.
+    </p>
+    {% endif %}
+
+  </div>
+</div>
+
+<!-- Script preview nama file -->
+<script>
+function previewFile(input) {
+  const label   = document.getElementById('upload-label');
+  const icon    = document.getElementById('upload-icon');
+  const fname   = document.getElementById('upload-fname');
+  if (input.files && input.files[0]) {
+    const name = input.files[0].name;
+    const size = (input.files[0].size / 1024 / 1024).toFixed(2);
+    label.style.borderColor  = '#059669';
+    label.style.background   = '#F0FDF4';
+    icon.textContent  = '✅';
+    fname.textContent = name + ' (' + size + ' MB)';
+    fname.style.color = '#065F46';
+  }
+}
+</script>
+
+    <!-- INFO PEMOHON -->
+    <div class="pemohon-card">
+      <div style="font-size:.7rem;font-weight:700;color:var(--abu);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.75rem;">Informasi Pemohon</div>
+      <div class="pemohon-avatar">{{ p.pemohon.nama|slice:":1"|upper }}</div>
+      <p class="pemohon-name">{{ p.pemohon.nama }}</p>
+      <div class="pemohon-detail">
+        <div>NIK: <strong>{{ p.pemohon.nik }}</strong></div>
+        <div>Email: <strong>{{ p.pemohon.email }}</strong></div>
+        <div>No. HP: <strong>{{ p.pemohon.no_hp }}</strong></div>
+        <div>Daftar: <strong>{{ p.pemohon.date_joined|date:"d M Y" }}</strong></div>
+      </div>
+    </div>
+
+    <!-- TOMBOL NAVIGASI -->
+    <div style="display:flex;flex-direction:column;gap:.5rem;">
+      <a href="{% url 'admin_custom:daftar' %}" class="btn btn-outline" style="justify-content:center;">← Kembali ke Daftar</a>
+    </div>
+
+  </div><!-- END SIDEBAR KANAN -->
+
+</div><!-- END LAYOUT -->
+
+{% endblock %}
