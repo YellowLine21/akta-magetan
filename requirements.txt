@@ -1,5 +1,6 @@
 asgiref==3.11.1
 Django==4.2.30
+dj-database-url==2.3.0
 gunicorn==23.0.0
 packaging==26.2
 psycopg2-binary==2.9.12
