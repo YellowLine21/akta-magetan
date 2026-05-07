@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts',
     'permohonan',
+    'admin_panel',
 ]
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
