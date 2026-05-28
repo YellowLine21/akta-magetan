@@ -99,6 +99,16 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+# ── CSRF & SECURITY untuk Railway (HTTPS) ─────────────────────
+CSRF_TRUSTED_ORIGINS = [
+    'https://akta-magetan-skripsikeabsahanakta.up.railway.app',
+    'http://127.0.0.1:8000',
+    'http://localhost:8000',
+]
+
+CSRF_COOKIE_SECURE   = not DEBUG   # True di Railway, False di lokal
+SESSION_COOKIE_SECURE = not DEBUG  # True di Railway, False di lokal
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Internationalization
 LANGUAGE_CODE = 'id'
