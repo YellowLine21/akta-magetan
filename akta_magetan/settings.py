@@ -109,6 +109,7 @@ CSRF_TRUSTED_ORIGINS = [
 CSRF_COOKIE_SECURE   = not DEBUG   # True di Railway, False di lokal
 SESSION_COOKIE_SECURE = not DEBUG  # True di Railway, False di lokal
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
 
 # Internationalization
 LANGUAGE_CODE = 'id'
