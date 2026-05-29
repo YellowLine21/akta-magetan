@@ -27,6 +27,14 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
+# ── CSRF & SECURITY untuk Railway (HTTPS) ─────────────────────
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.up.railway.app',
+    'http://*.up.railway.app',
+    'http://127.0.0.1:8000',
+    'http://localhost:8000',
+]
+
 
 # Application definition
 
