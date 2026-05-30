@@ -146,3 +146,9 @@ EMAIL_HOST_USER = 'yellowline.ylp@gmail.com'
 EMAIL_HOST_PASSWORD = 'kdzw lcth hpuo poti' # Gunakan App Password Gmail, bukan password utama
 DEFAULT_FROM_EMAIL = 'Dinas Kependudukan dan Pencatatan Sipil Kabupaten Magetan'
 
+# ── CSRF & SECURITY untuk Railway ─────────────────────
+CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',') if os.environ.get('CSRF_TRUSTED_ORIGINS') else [
+    'http://127.0.0.1:8000',
+    'http://localhost:8000',
+]
+
