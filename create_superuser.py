@@ -4,7 +4,9 @@ import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'akta_magetan.settings')
 django.setup()
 
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 username = os.getenv('SUPERUSER_USERNAME', 'admin')
 email = os.getenv('SUPERUSER_EMAIL', 'admin@example.com')
