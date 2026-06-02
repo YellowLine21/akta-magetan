@@ -101,7 +101,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # ── CSRF & SECURITY untuk Railway (HTTPS) ─────────────────────
 CSRF_TRUSTED_ORIGINS = [
-    'https://akta-magetan-skripsikeabsahanakta.up.railway.app',
+    'https://akta-magetan-production.up.railway.app',
     'http://127.0.0.1:8000',
     'http://localhost:8000',
 ]
@@ -138,3 +138,4 @@ EMAIL_USE_SSL = False
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'yellowline.ylp@gmail.com')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'kdzw lcth hpuo poti')
 DEFAULT_FROM_EMAIL = 'Dinas Kependudukan dan Pencatatan Sipil Kabupaten Magetan'
+
