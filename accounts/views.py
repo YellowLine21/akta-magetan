@@ -1,10 +1,14 @@
 import secrets
+import logging
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.core.mail import send_mail
+from django.core.mail import BadHeaderError
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+
+logger = logging.getLogger(__name__)
 
 from .forms import RegisterForm, LoginForm
 from .models import CustomUser
@@ -34,23 +38,54 @@ def register_view(request):
             verification_url = request.build_absolute_uri(
                 f"/akun/verifikasi-email/{token}/"
             )
-            send_mail(
-                subject="Verifikasi Email — Akta Kelahiran Magetan",
-                message=(
-                    f"Halo {user.nama},\n\n"
-                    f"Klik link berikut untuk memverifikasi email Anda:\n{verification_url}\n\n"
-                    "Link berlaku selama 24 jam.\n\n"
-                    "Salam,\nDinas Kependudukan Kabupaten Magetan"
-                ),
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[user.email],
-                fail_silently=False,
-            )
-            messages.success(
-                request,
-                f"Registrasi berhasil! Kami mengirimkan link verifikasi ke {user.email}. "
-                "Silakan cek email Anda.",
-            )
+            try:
+                send_mail(
+                    subject="Verifikasi Email — Akta Kelahiran Magetan",
+                    message=(
+                        f"Halo {user.nama},\n\n"
+                        f"Klik link berikut untuk memverifikasi email Anda:\n{verification_url}\n\n"
+                        "Link berlaku selama 24 jam.\n\n"
+                        "Salam,\nDinas Kependudukan Kabupaten Magetan"
+                    ),
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[user.email],
+                    fail_silently=False,
+                )
+                messages.success(
+                    request,
+                    f"Registrasi berhasil! Kami mengirimkan link verifikasi ke {user.email}. "
+                    "Silakan cek email Anda.",
+                )
+            except BadHeaderError:
+                logger.error("Registrasi %s: header email tidak valid.", user.email)
+                messages.error(
+                    request,
+                    "Terjadi kesalahan pada header email. Silakan hubungi administrator.",
+                )
+            except OSError as exc:
+                # Mencakup socket.error / ConnectionRefusedError saat SMTP tidak dapat dihubungi
+                logger.error(
+                    "Registrasi %s: gagal mengirim email verifikasi — %s",
+                    user.email,
+                    exc,
+                )
+                messages.warning(
+                    request,
+                    f"Akun Anda berhasil dibuat, namun email verifikasi ke {user.email} "
+                    "gagal terkirim karena masalah konfigurasi server email. "
+                    "Silakan hubungi administrator untuk mengaktifkan akun Anda.",
+                )
+            except Exception as exc:  # noqa: BLE001
+                logger.exception(
+                    "Registrasi %s: error tak terduga saat mengirim email — %s",
+                    user.email,
+                    exc,
+                )
+                messages.warning(
+                    request,
+                    f"Akun Anda berhasil dibuat, namun email verifikasi ke {user.email} "
+                    "gagal terkirim. Silakan hubungi administrator.",
+                )
             return redirect("login")
     else:
         form = RegisterForm()
