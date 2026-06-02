@@ -129,12 +129,27 @@ STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# Email
+# ── Email (SMTP Gmail) ────────────────────────────────────────────────────────
+# Wajib set di Railway (atau .env lokal):
+#   EMAIL_HOST_USER     — alamat Gmail pengirim, mis. noreply@example.com
+#   EMAIL_HOST_PASSWORD — App Password Gmail (bukan password akun biasa)
+#                         Buat di: https://myaccount.google.com/apppasswords
+# ─────────────────────────────────────────────────────────────────────────────
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'yellowline.ylp@gmail.com')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'kdzw lcth hpuo poti')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = 'Dinas Kependudukan dan Pencatatan Sipil Kabupaten Magetan'
+
+# Peringatan saat startup jika konfigurasi email belum diset
+import warnings
+if not EMAIL_HOST_USER or not EMAIL_HOST_PASSWORD:
+    warnings.warn(
+        "Konfigurasi email belum lengkap: environment variable EMAIL_HOST_USER "
+        "dan/atau EMAIL_HOST_PASSWORD tidak ditemukan. "
+        "Email verifikasi tidak akan dapat dikirim.",
+        stacklevel=2,
+    )
