@@ -1,13 +1,17 @@
+import logging
 import secrets
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
-from django.contrib import messages
-from django.core.mail import send_mail
-from django.conf import settings
-from django.contrib.auth.decorators import login_required
 
-from .forms import RegisterForm, LoginForm
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.core.mail import BadHeaderError, send_mail
+from django.shortcuts import redirect, render
+
+from .forms import LoginForm, RegisterForm
 from .models import CustomUser
+
+logger = logging.getLogger(__name__)
 
 
 def landing(request):
@@ -24,6 +28,7 @@ def register_view(request):
         form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
+
             # Generate token verifikasi email
             token = secrets.token_urlsafe(32)
             user.email_token = token
@@ -34,23 +39,60 @@ def register_view(request):
             verification_url = request.build_absolute_uri(
                 f"/akun/verifikasi-email/{token}/"
             )
-            send_mail(
-                subject="Verifikasi Email — Akta Kelahiran Magetan",
-                message=(
-                    f"Halo {user.nama},\n\n"
-                    f"Klik link berikut untuk memverifikasi email Anda:\n{verification_url}\n\n"
-                    "Link berlaku selama 24 jam.\n\n"
-                    "Salam,\nDinas Kependudukan Kabupaten Magetan"
-                ),
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[user.email],
-                fail_silently=False,
-            )
-            messages.success(
-                request,
-                f"Registrasi berhasil! Kami mengirimkan link verifikasi ke {user.email}. "
-                "Silakan cek email Anda.",
-            )
+
+            try:
+                send_mail(
+                    subject="Verifikasi Email — Akta Kelahiran Magetan",
+                    message=(
+                        f"Halo {user.nama},\n\n"
+                        f"Klik link berikut untuk memverifikasi email Anda:\n{verification_url}\n\n"
+                        "Link berlaku selama 24 jam.\n\n"
+                        "Salam,\nDinas Kependudukan Kabupaten Magetan"
+                    ),
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[user.email],
+                    fail_silently=False,
+                )
+                messages.success(
+                    request,
+                    f"Registrasi berhasil! Kami mengirimkan link verifikasi ke {user.email}. "
+                    "Silakan cek email Anda (termasuk folder Spam).",
+                )
+
+            except BadHeaderError:
+                logger.error(
+                    "BadHeaderError saat mengirim email verifikasi ke %s", user.email
+                )
+                messages.warning(
+                    request,
+                    "Akun berhasil dibuat, tetapi email verifikasi gagal dikirim "
+                    "(header email tidak valid). Hubungi administrator.",
+                )
+
+            except OSError as exc:
+                # Mencakup ConnectionRefusedError, socket.error, dll.
+                logger.error(
+                    "OSError saat mengirim email verifikasi ke %s: %s",
+                    user.email,
+                    exc,
+                )
+                messages.warning(
+                    request,
+                    "Akun berhasil dibuat, tetapi email verifikasi gagal dikirim "
+                    "(tidak dapat terhubung ke server email). "
+                    "Coba lagi nanti atau hubungi administrator.",
+                )
+
+            except Exception as exc:  # noqa: BLE001
+                logger.exception(
+                    "Gagal mengirim email verifikasi ke %s: %s", user.email, exc
+                )
+                messages.warning(
+                    request,
+                    "Akun berhasil dibuat, tetapi email verifikasi gagal dikirim. "
+                    "Hubungi administrator jika masalah berlanjut.",
+                )
+
             return redirect("login")
     else:
         form = RegisterForm()
@@ -82,7 +124,6 @@ def login_view(request):
             nik = form.cleaned_data["nik"]
             password = form.cleaned_data["password"]
             user = authenticate(request, nik=nik, password=password)
-
             if user is not None:
                 if not user.email_verified:
                     messages.warning(
