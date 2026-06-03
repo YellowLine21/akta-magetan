@@ -4,6 +4,7 @@ Django settings for akta_magetan project.
 
 from pathlib import Path
 import os
+import warnings
 import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -82,7 +83,6 @@ if DATABASE_URL:
         )
     }
 else:
-    # Lokal development: pakai SQLite
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -106,10 +106,10 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
 ]
 
-CSRF_COOKIE_SECURE   = not DEBUG   # True di Railway, False di lokal
-SESSION_COOKIE_SECURE = not DEBUG  # True di Railway, False di lokal
+CSRF_COOKIE_SECURE    = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-USE_X_FORWARDED_HOST = True
+USE_X_FORWARDED_HOST  = True
 
 # Internationalization
 LANGUAGE_CODE = 'id'
@@ -129,12 +129,36 @@ STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# Email
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'yellowline.ylp@gmail.com')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'kdzw lcth hpuo poti')
-DEFAULT_FROM_EMAIL = 'Dinas Kependudukan dan Pencatatan Sipil Kabupaten Magetan'
+# ── Email ──────────────────────────────────────────────────────
+# Wajib diisi via environment variable di Railway.
+# Jangan hardcode credentials di sini.
+EMAIL_BACKEND      = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST         = 'smtp.gmail.com'
+EMAIL_PORT         = 587
+EMAIL_USE_TLS      = True
+EMAIL_USE_SSL      = False
+EMAIL_HOST_USER    = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.environ.get(
+    'DEFAULT_FROM_EMAIL',
+    'Dinas Kependudukan dan Pencatatan Sipil Kabupaten Magetan',
+)
+
+# Peringatan startup jika env var email belum dikonfigurasi
+if not EMAIL_HOST_USER:
+    warnings.warn(
+        "[akta_magetan] EMAIL_HOST_USER belum diset. "
+        "Fitur pengiriman email tidak akan berfungsi. "
+        "Set environment variable EMAIL_HOST_USER di Railway.",
+        RuntimeWarning,
+        stacklevel=2,
+    )
+
+if not EMAIL_HOST_PASSWORD:
+    warnings.warn(
+        "[akta_magetan] EMAIL_HOST_PASSWORD belum diset. "
+        "Fitur pengiriman email tidak akan berfungsi. "
+        "Set environment variable EMAIL_HOST_PASSWORD di Railway.",
+        RuntimeWarning,
+        stacklevel=2,
+    )
