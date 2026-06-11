@@ -143,6 +143,15 @@ DEFAULT_FROM_EMAIL = os.environ.get(
     'DEFAULT_FROM_EMAIL',
     'Dinas Kependudukan dan Pencatatan Sipil Kabupaten Magetan',
 )
+EMAIL_TIMEOUT = 5  # 5 second timeout for SMTP connections
+
+# ── Celery ─────────────────────────────────────────────────────
+CELERY_BROKER_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
 
 # Peringatan startup jika env var email belum dikonfigurasi
 if not EMAIL_HOST_USER:
