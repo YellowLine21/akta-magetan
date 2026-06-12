@@ -152,16 +152,16 @@ if not os.environ.get('RESEND_API_KEY'):
         stacklevel=2,
     )
 
-#EMAIL_HOST         = 'smtp.gmail.com'
-#EMAIL_PORT         = 465
-#EMAIL_USE_TLS      = False
-#EMAIL_USE_SSL      = True
-#EMAIL_HOST_USER    = os.environ.get('EMAIL_HOST_USER', '')
-#EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-#DEFAULT_FROM_EMAIL = os.environ.get(
-#    'DEFAULT_FROM_EMAIL',
-#    'Dinas Kependudukan dan Pencatatan Sipil Kabupaten Magetan',
-#)
+EMAIL_HOST         = 'smtp.gmail.com'
+EMAIL_PORT         = 465
+EMAIL_USE_TLS      = False
+EMAIL_USE_SSL      = True
+EMAIL_HOST_USER    = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.environ.get(
+    'DEFAULT_FROM_EMAIL',
+    'Dinas Kependudukan dan Pencatatan Sipil Kabupaten Magetan',
+)
 
 # Peringatan startup jika env var email belum dikonfigurasi
 if not EMAIL_HOST_USER:
