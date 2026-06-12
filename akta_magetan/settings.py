@@ -132,7 +132,25 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # ── Email ──────────────────────────────────────────────────────
 # Wajib diisi via environment variable di Railway.
 # Jangan hardcode credentials di sini.
-EMAIL_BACKEND      = 'django.core.mail.backends.smtp.EmailBackend'
+# ── Email via Resend (API, bukan SMTP) ────────────────────────
+EMAIL_BACKEND = 'anymail.backends.resend.EmailBackend'
+
+ANYMAIL = {
+    'RESEND_API_KEY': os.environ.get('RESEND_API_KEY', ''),
+}
+
+DEFAULT_FROM_EMAIL = os.environ.get(
+    'DEFAULT_FROM_EMAIL',
+    'Dinas Kependudukan <onboarding@resend.dev>',  # ganti setelah verifikasi domain
+)
+
+if not os.environ.get('RESEND_API_KEY'):
+    warnings.warn(
+        "[akta_magetan] RESEND_API_KEY belum diset. Email tidak akan terkirim.",
+        RuntimeWarning,
+        stacklevel=2,
+    )
+
 EMAIL_HOST         = 'smtp.gmail.com'
 EMAIL_PORT         = 465
 EMAIL_USE_TLS      = False
