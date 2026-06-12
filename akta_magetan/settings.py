@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'accounts',
     'permohonan',
     'admin_panel',
+    'anymail',
 ]
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
