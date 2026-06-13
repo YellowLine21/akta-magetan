@@ -1,15 +1,14 @@
 import logging
 import secrets
 
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.core.mail import BadHeaderError, send_mail
 from django.shortcuts import redirect, render
 
 from .forms import LoginForm, RegisterForm
 from .models import CustomUser
+from .tasks import send_verification_email
 
 logger = logging.getLogger(__name__)
 
@@ -35,63 +34,19 @@ def register_view(request):
             user.email_verified = False
             user.save()
 
-            # Kirim email verifikasi
+            # Kirim email verifikasi secara asinkron via Celery
             verification_url = request.build_absolute_uri(
                 f"/akun/verifikasi-email/{token}/"
             )
 
-            try:
-                send_mail(
-                    subject="Verifikasi Email — Akta Kelahiran Magetan",
-                    message=(
-                        f"Halo {user.nama},\n\n"
-                        f"Klik link berikut untuk memverifikasi email Anda:\n{verification_url}\n\n"
-                        "Link berlaku selama 24 jam.\n\n"
-                        "Salam,\nDinas Kependudukan Kabupaten Magetan"
-                    ),
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[user.email],
-                    fail_silently=False,
-                )
-                messages.success(
-                    request,
-                    f"Registrasi berhasil! Kami mengirimkan link verifikasi ke {user.email}. "
-                    "Silakan cek email Anda (termasuk folder Spam).",
-                )
+            send_verification_email.delay(user.email, user.nama, verification_url)
+            logger.info("Email verifikasi dijadwalkan untuk %s", user.email)
 
-            except BadHeaderError:
-                logger.error(
-                    "BadHeaderError saat mengirim email verifikasi ke %s", user.email
-                )
-                messages.warning(
-                    request,
-                    "Akun berhasil dibuat, tetapi email verifikasi gagal dikirim "
-                    "(header email tidak valid). Hubungi administrator.",
-                )
-
-            except OSError as exc:
-                # Mencakup ConnectionRefusedError, socket.error, dll.
-                logger.error(
-                    "OSError saat mengirim email verifikasi ke %s: %s",
-                    user.email,
-                    exc,
-                )
-                messages.warning(
-                    request,
-                    "Akun berhasil dibuat, tetapi email verifikasi gagal dikirim "
-                    "(tidak dapat terhubung ke server email). "
-                    "Coba lagi nanti atau hubungi administrator.",
-                )
-
-            except Exception as exc:  # noqa: BLE001
-                logger.exception(
-                    "Gagal mengirim email verifikasi ke %s: %s", user.email, exc
-                )
-                messages.warning(
-                    request,
-                    "Akun berhasil dibuat, tetapi email verifikasi gagal dikirim. "
-                    "Hubungi administrator jika masalah berlanjut.",
-                )
+            messages.success(
+                request,
+                f"Registrasi berhasil! Kami mengirimkan link verifikasi ke {user.email}. "
+                "Silakan cek email Anda (termasuk folder Spam).",
+            )
 
             return redirect("login")
     else:
