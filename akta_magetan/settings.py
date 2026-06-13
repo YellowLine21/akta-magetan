@@ -30,7 +30,6 @@ INSTALLED_APPS = [
     'accounts',
     'permohonan',
     'admin_panel',
-    'anymail',
 ]
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
@@ -130,54 +129,26 @@ STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# ── Email ──────────────────────────────────────────────────────
-# Wajib diisi via environment variable di Railway.
-# Jangan hardcode credentials di sini.
-# ── Email via Resend (API, bukan SMTP) ────────────────────────
-EMAIL_BACKEND = 'anymail.backends.resend.EmailBackend'
-
-ANYMAIL = {
-    'RESEND_API_KEY': os.environ.get('RESEND_API_KEY', ''),
-}
-
-DEFAULT_FROM_EMAIL = os.environ.get(
-    'DEFAULT_FROM_EMAIL',
-    'Dinas Kependudukan <onboarding@resend.dev>',  # ganti setelah verifikasi domain
-)
-
-if not os.environ.get('RESEND_API_KEY'):
-    warnings.warn(
-        "[akta_magetan] RESEND_API_KEY belum diset. Email tidak akan terkirim.",
-        RuntimeWarning,
-        stacklevel=2,
-    )
-
-EMAIL_HOST         = 'smtp.gmail.com'
-EMAIL_PORT         = 465
-EMAIL_USE_TLS      = False
-EMAIL_USE_SSL      = True
-EMAIL_HOST_USER    = os.environ.get('EMAIL_HOST_USER', '')
+# ── Email via Brevo SMTP ───────────────────────────────────────
+EMAIL_BACKEND     = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST        = 'smtp-relay.brevo.com'
+EMAIL_PORT        = 587
+EMAIL_USE_TLS     = True
+EMAIL_USE_SSL     = False
+EMAIL_HOST_USER   = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = os.environ.get(
     'DEFAULT_FROM_EMAIL',
-    'Dinas Kependudukan dan Pencatatan Sipil Kabupaten Magetan',
+    'Dinas Kependudukan Magetan <noreply@resend.dev>',
 )
 
-# Peringatan startup jika env var email belum dikonfigurasi
 if not EMAIL_HOST_USER:
     warnings.warn(
-        "[akta_magetan] EMAIL_HOST_USER belum diset. "
-        "Fitur pengiriman email tidak akan berfungsi. "
-        "Set environment variable EMAIL_HOST_USER di Railway.",
-        RuntimeWarning,
-        stacklevel=2,
+        "[akta_magetan] EMAIL_HOST_USER belum diset.",
+        RuntimeWarning, stacklevel=2,
     )
-
 if not EMAIL_HOST_PASSWORD:
     warnings.warn(
-        "[akta_magetan] EMAIL_HOST_PASSWORD belum diset. "
-        "Fitur pengiriman email tidak akan berfungsi. "
-        "Set environment variable EMAIL_HOST_PASSWORD di Railway.",
-        RuntimeWarning,
-        stacklevel=2,
+        "[akta_magetan] EMAIL_HOST_PASSWORD belum diset.",
+        RuntimeWarning, stacklevel=2,
     )
