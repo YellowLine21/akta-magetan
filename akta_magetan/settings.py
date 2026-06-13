@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'accounts',
     'permohonan',
     'admin_panel',
+    'anymail',
 ]
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
@@ -130,7 +131,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # ── Email via Brevo SMTP ───────────────────────────────────────
-EMAIL_BACKEND     = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'anymail.backends.resend.EmailBackend'
+ANYMAIL = {
+    'RESEND_API_KEY': os.environ.get('RESEND_API_KEY', ''),
+}
 EMAIL_HOST        = 'smtp-relay.brevo.com'
 EMAIL_PORT        = 587
 EMAIL_USE_TLS     = True
@@ -139,7 +143,7 @@ EMAIL_HOST_USER   = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = os.environ.get(
     'DEFAULT_FROM_EMAIL',
-    'Dinas Kependudukan Magetan <noreply@resend.dev>',
+    'Dinas Kependudukan Magetan <onboarding@resend.dev>',
 )
 
 if not EMAIL_HOST_USER:
