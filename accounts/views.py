@@ -1,7 +1,6 @@
 import logging
 import secrets
 
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -49,7 +48,7 @@ def register_view(request):
                         "Link berlaku selama 24 jam.\n\n"
                         "Salam,\nDinas Kependudukan Kabupaten Magetan"
                     ),
-                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    from_email="weekendworkers.ww@gmail.com",
                     recipient_list=[user.email],
                     fail_silently=False,
                 )
